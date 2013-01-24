@@ -71,7 +71,8 @@ PRODUCT_PACKAGES += \
 	WCNSS_qcom_wlan_nv.bin \
 	tcpdump \
 	Torch \
-	Stk
+	Stk \
+	libxml2
 
 # Charger
 PRODUCT_PACKAGES += charger charger_res_images
@@ -81,15 +82,15 @@ PRODUCT_PACKAGES += qrngd
 
 #bluetooth
 PRODUCT_PACKAGES += \
-            hciconfig \
-            hcitool
+	hciconfig \
+	hcitool
 
 # HAL
 PRODUCT_PACKAGES += \
-    copybit.msm8960 \
-    gralloc.msm8960 \
-    hwcomposer.msm8960 \
-    power.msm8960
+	copybit.msm8960 \
+	gralloc.msm8960 \
+	hwcomposer.msm8960 \
+	power.msm8960
 
 # NFC Support
 # NFCEE access control
