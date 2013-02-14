@@ -69,10 +69,9 @@ PRODUCT_PACKAGES += \
 #misc
 PRODUCT_PACKAGES += \
 	WCNSS_qcom_wlan_nv.bin \
-    lights.msm8960 \
 	tcpdump \
-    Torch \
-    Stk
+	Torch \
+	Stk
 
 # Charger
 PRODUCT_PACKAGES += charger charger_res_images
