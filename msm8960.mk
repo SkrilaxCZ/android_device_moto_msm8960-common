@@ -97,7 +97,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
 	libloc_adapter \
 	libloc_eng \
-	libgps.utils \
+	libgps.utils
 
 # NFC Support
 # NFCEE access control
@@ -109,11 +109,11 @@ endif
 PRODUCT_COPY_FILES += $(NFCEE_ACCESS_PATH):system/etc/nfcee_access.xml
 PRODUCT_PACKAGES += \
 	nfc.msm8960 \
-    libnfc \
-    libnfc_jni \
-    Nfc \
-    Tag \
-    com.android.nfc_extras
+	libnfc \
+	libnfc_jni \
+	Nfc \
+	Tag \
+	com.android.nfc_extras
 
 # Misc
 PRODUCT_PACKAGES += \
@@ -126,7 +126,7 @@ PRODUCT_PACKAGES += \
     MagicSmokeWallpapers \
     HoloSpiralWallpaper \
     VisualizationWallpapers \
-    librs_jni \
+    librs_jni
 
 # keylayouts
 PRODUCT_COPY_FILES += \
@@ -147,7 +147,7 @@ PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/keylayout/Vendor_046d_Product_c532.kl:system/usr/keylayout/Vendor_046d_Product_c532.kl \
 	$(LOCAL_PATH)/keylayout/Vendor_054c_Product_0268.kl:system/usr/keylayout/Vendor_054c_Product_0268.kl \
 	$(LOCAL_PATH)/keylayout/Vendor_05ac_Product_0239.kl:system/usr/keylayout/Vendor_05ac_Product_0239.kl \
-	$(LOCAL_PATH)/keylayout/Vendor_22b8_Product_093d.kl:system/usr/keylayout/Vendor_22b8_Product_093d.kl \
+	$(LOCAL_PATH)/keylayout/Vendor_22b8_Product_093d.kl:system/usr/keylayout/Vendor_22b8_Product_093d.kl
 
 # Keychars
 PRODUCT_COPY_FILES += \

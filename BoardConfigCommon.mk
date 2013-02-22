@@ -31,6 +31,8 @@ TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_ARCH_VARIANT_CPU := cortex-a9
 TARGET_CPU_SMP := true
 COMMON_GLOBAL_CFLAGS += -D__ARM_USE_PLD -D__ARM_CACHE_LINE_SIZE=64
+TARGET_GLOBAL_CFLAGS += -mfpu=neon-vfpv4 -mfloat-abi=softfp
+TARGET_GLOBAL_CPPFLAGS += -mfpu=neon-vfpv4 -mfloat-abi=softfp
 BOARD_USES_QCOM_HARDWARE := true
 
 # Krait optimizations
@@ -49,6 +51,7 @@ BOARD_HOSTAPD_DRIVER := NL80211
 WIFI_DRIVER_MODULE_PATH := "/system/lib/modules/wlan.ko"
 WIFI_DRIVER_MODULE_NAME := "wlan"
 BOARD_WLAN_DEVICE := qcwcn
+BOARD_NO_APSME_ATTR := true
 WIFI_DRIVER_FW_PATH_STA := "sta"
 WIFI_DRIVER_FW_PATH_AP  := "ap"
 
@@ -71,7 +74,10 @@ TARGET_USES_ION := true
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
-TARGET_CUSTOM_BLUEDROID := ../../../$(LOCAL_PATH)/modules/bluetooth/bluetooth.c
+BOARD_BLUEDROID_VENDOR_CONF := $(LOCAL_PATH)/modules/bluetooth/vnd_moto.txt
+BOARD_BLUETOOTH_USES_HCIATTACH_PROPERTY := true
+BOARD_HAVE_BLUETOOTH_QCOM := true
+BLUETOOTH_HCI_USE_MCT := true
 
 # NFC
 BOARD_HAVE_NFC := true
