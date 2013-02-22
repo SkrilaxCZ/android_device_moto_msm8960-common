@@ -90,14 +90,7 @@ PRODUCT_PACKAGES += \
 	copybit.msm8960 \
 	gralloc.msm8960 \
 	hwcomposer.msm8960 \
-	power.msm8960 \
-	gps.msm8960
-
-#GPS
-PRODUCT_PACKAGES += \
-	libloc_adapter \
-	libloc_eng \
-	libgps.utils
+	power.msm8960
 
 # NFC Support
 # NFCEE access control
