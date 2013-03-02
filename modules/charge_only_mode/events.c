@@ -179,7 +179,7 @@ int ev_get(int timeout_ms)
 				;
 			if(strstr(msg, CHARGER_DRIVER))
 			{
-				ALOGD("pm8921_battery UEVENT msg : %s\n", msg);
+				LOGD("pm8921_battery UEVENT msg : %s\n", msg);
 				return EVENT_BATTERY;
 
 			}
@@ -208,7 +208,7 @@ int uev_get(int timeout_ms)
 					;
                 if(strstr(msg, CHARGER_DRIVER))
                 {
-                       ALOGD("pm8921_battery uev_get UEVENT msg : %s\n", msg);
+                       LOGD("pm8921_battery uev_get UEVENT msg : %s\n", msg);
                        return EVENT_BATTERY;
 
                 }

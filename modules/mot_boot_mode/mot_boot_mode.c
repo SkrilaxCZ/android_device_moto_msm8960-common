@@ -93,7 +93,7 @@ int check_abnormal_reboot(void)
     if((!strncmp(abnormal_boot, "kpanic", 6)) ||
 	(!strncmp(abnormal_boot, "wdreset", 7)) ||
 	(!strncmp(abnormal_boot, "wdcpcap", 7))) {
-        ALOGD("MOTO_PUPD: bootmode=%s\n", abnormal_boot);
+        LOGD("MOTO_PUPD: bootmode=%s\n", abnormal_boot);
 	return 1;
     } else {
 	if((check_bootinfo("POWERUPREASON", MOTO_PU_REASON_KPANIC)) ||
@@ -154,7 +154,7 @@ int boot_reason_charge_only(void)
     property_get("ro.bootmode", powerup_reason, "unknown");
 
     if(!strncmp(powerup_reason, "charger", 7)) {
-        ALOGD("MOTO_PUPD: bootmode=%s\n", powerup_reason);
+        LOGD("MOTO_PUPD: bootmode=%s\n", powerup_reason);
         return 1;
     } else if(check_bootinfo("POWERUPREASON", MOTO_PU_REASON_CHARGE_ONLY)) {
 		return 1;
@@ -181,7 +181,7 @@ int check_cid_recover_boot(void)
     property_get("ro.bootmode", cid_recover_boot, "unknown");
 
     if(!strncmp(cid_recover_boot, "cidtcmd", 7)) {
-        ALOGD("MOTO_PUPD: bootmode=%s\n", cid_recover_boot);
+        LOGD("MOTO_PUPD: bootmode=%s\n", cid_recover_boot);
 	return 1;
     } else {
 	return(check_bootinfo("\nCID_RECOVER_BOOT", MOTO_CID_RECOVER_BOOT));
@@ -210,28 +210,28 @@ int check_data_12m(void)
  ********************************************************************/
 int main(int argc, char **argv)
 {
-    ALOGD("MOTO_PUPD: mot_boot_mode\n");
+    LOGD("MOTO_PUPD: mot_boot_mode\n");
 
     if (check_cid_recover_boot()){
 
-        ALOGD("MOTO_PUPD: check_cid_recover_boot: 1\n");
+        LOGD("MOTO_PUPD: check_cid_recover_boot: 1\n");
         property_set("tcmd.cid.recover.boot", "1");
         property_set("tcmd.suspend", "1");
 
     }else if (boot_reason_charge_only()){
 
-    	ALOGD("MOTO_PUPD: boot_reason_charge_only: 1\n");
+    	LOGD("MOTO_PUPD: boot_reason_charge_only: 1\n");
         property_set("sys.chargeonly.mode", "1");
 
     }else if (check_data_12m()){
 
-        ALOGD("MOTO_PUPD: mot_boot_mode 12m: 1\n");
+        LOGD("MOTO_PUPD: mot_boot_mode 12m: 1\n");
         property_set("tcmd.12m.test", "1");
         property_set("tcmd.suspend", "1");
 
     }else{
 
-       	ALOGD("MOTO_PUPD: mot_boot_mode : normal\n");
+       	LOGD("MOTO_PUPD: mot_boot_mode : normal\n");
        	property_set("tcmd.suspend", "0");
     }
 

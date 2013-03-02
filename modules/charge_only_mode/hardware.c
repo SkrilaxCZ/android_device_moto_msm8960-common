@@ -165,13 +165,13 @@ static int write_string(const char* file, const char* string, int len)
 
     fd = open(file, O_RDWR);
     if (fd < 0) {
-        ALOGD("%s open failed: %d\n", file, errno);
+        LOGD("%s open failed: %d\n", file, errno);
         return errno;
     }
 
     amt = write(fd, string, len);
     if (amt < 0) {
-        ALOGD("%s write failed: %d\n", file, errno);
+        LOGD("%s write failed: %d\n", file, errno);
     }
 
     close(fd);
@@ -185,7 +185,7 @@ static int __set_led_state(unsigned color, int on, int off)
     int alpha, red, green;
     int blink;
 
-    ALOGD("set_led_state color=%08X, on=%d, off=%d\n", color, on, off);
+    LOGD("set_led_state color=%08X, on=%d, off=%d\n", color, on, off);
 
     /* alpha of 0 or color of 0 means off*/
     if ((color & 0xff000000) == 0 || (color & 0x00ffffff) == 0) {
@@ -244,7 +244,7 @@ void set_brightness(float percent)
 	int fd, n;
 	char b[20];
 
-        ALOGD("set_brightness: %f\n", percent);
+        LOGD("set_brightness: %f\n", percent);
 	fd = open("/sys/class/backlight/lcd-backlight/brightness", O_RDWR);
 	if (fd < 0) {
 		fd = open("/sys/class/backlight/lm3532_bl/brightness", O_RDWR);
@@ -261,7 +261,7 @@ void set_button_brightness(float percent)
 	int fd, n;
 	char b[20];
 
-        ALOGD("set_button_brightness: %f\n", percent);
+        LOGD("set_button_brightness: %f\n", percent);
 	fd = open("/sys/class/leds/button-backlight/brightness", O_RDWR);
 	if (fd < 0)
 		return;

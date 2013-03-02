@@ -65,7 +65,7 @@ int clear_mode(const char *path)
 {
         int r = truncate(path, 0);
         sync();
-        ALOGD("clear mode return %d\n", r);
+        LOGD("clear mode return %d\n", r);
 	sleep(1);
         return r;
 }
@@ -122,9 +122,9 @@ void power_key_alarm(void *_)
 	/* Set powerup reason outof-charge-only to MBM. */
 	clear_mode(FS_PATH);
 	int ret = __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "outofcharge");
-	ALOGD("reboot to outofcharge!\n");
+	LOGD("reboot to outofcharge!\n");
 	if(ret < 0) {
-		ALOGD("reboot fail!\n");
+		LOGD("reboot fail!\n");
 	}
 	else {
 		quit = 1;
@@ -156,11 +156,11 @@ void power_event(int update_leds)
 	/* Prevent showing anything but 0% until Power Voltage is high enough */
 	if (state.voltage_level >= POWERUP_VOLTAGE) {
 		powerup = 1;
-		ALOGD("voltage ok for PU %d\n", state.voltage_level);
+		LOGD("voltage ok for PU %d\n", state.voltage_level);
 		powerup_latch = 1;
         }else{
 		powerup = 0;
-		ALOGD("voltage is %d, less than powerup voltage %d\n",
+		LOGD("voltage is %d, less than powerup voltage %d\n",
 			state.voltage_level, POWERUP_VOLTAGE);
 		if (!powerup_latch)
 			state.charge_level = 0;
@@ -223,7 +223,7 @@ int launch_sequence(int r)
 			if(sequence[counter] == r)
 			{
 				counter++;
-				ALOGD("increment launch counter to %d\n",counter);
+				LOGD("increment launch counter to %d\n",counter);
 			}
 			else
 			{
@@ -232,7 +232,7 @@ int launch_sequence(int r)
 			if(counter == (int) sizeof(sequence)/sizeof(int))
 			{
 				//Activated!
-				ALOGI("Launched.\n");
+				LOGI("Launched.\n");
 				return(1);
 			}
 			break;

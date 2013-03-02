@@ -139,7 +139,7 @@ int switch_storage(STORAGE_T old_storage, STORAGE_T new_storage)
 	aplogd_logfile_max = aplogd_get_filesize(new_storage);
 	aplogd_close_output();
 	if (aplogd_output_setup(new_storage)<0){
-		ALOGE("aplogd_output_setup in %s failed.",g_output_path[new_storage]);
+		LOGE("aplogd_output_setup in %s failed.",g_output_path[new_storage]);
 		aplogd_output_setup(old_storage);
 		return old_storage;
 	}
@@ -633,7 +633,7 @@ static int aplogd_io_boot_finish(void)
 			}else{/* STORAGE_SECONDARY is writable */
 				aplogd_log_save(STORAGE_SECONDARY);
 				if (aplogd_output_setup(g_current_storage) != 0){
-					ALOGE("Output setup in aplogd_io_boot_finish failed.\n");
+					LOGE("Output setup in aplogd_io_boot_finish failed.\n");
 					g_current_storage= STORAGE_EXTERNAL;
 					}
 			}
@@ -744,11 +744,11 @@ void aplogd_log_save(STORAGE_T storage)
 		if(access(g_output_path[storage],0)!=0)
 			return;
 		if (statfs(g_output_path[storage], &fs_stat) == -1)
-			ALOGE("Error on aplogd statfs: %s errno=%d(%s)\n",
+			LOGE("Error on aplogd statfs: %s errno=%d(%s)\n",
 				g_output_path[storage], errno, strerror(errno));
 		else if (fs_stat.f_bfree * fs_stat.f_bsize < SZ_1G) {
 			usr_cfg_backup = DEFAULT_USR_CFG_MAX_DIR_COUNT;
-			ALOGW("%s free space size < 1G, only save the lastest %d log folders",
+			LOGW("%s free space size < 1G, only save the lastest %d log folders",
 				g_output_path[storage], DEFAULT_USR_CFG_MAX_DIR_COUNT);
 		}
 		num = aplogd_util_cleardir(g_output_path[storage], usr_cfg_backup);
@@ -811,7 +811,7 @@ void aplogd_log_io(void)
 	aplogd_log_save(STORAGE_SECONDARY);
 	aplogd_log_save(STORAGE_USERDATA);
 	if(aplogd_io_boot_finish()<0){
-		ALOGE("Error in aplogd setup.\n");
+		LOGE("Error in aplogd setup.\n");
 		goto fail;
 	}
 	/* Do the actual input retrieval work */

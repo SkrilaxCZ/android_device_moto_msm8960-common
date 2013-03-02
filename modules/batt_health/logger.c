@@ -37,7 +37,7 @@ void logger_file_write(void *generic_info,int length)
 
 	logger_write_fp = fopen(LOG_FILE, "a");
 	if (logger_write_fp == NULL) {
-		ALOGE("fopen failure for power_supply_info.bin,errno = %d (%s)",errno,strerror(errno));
+		LOGE("fopen failure for power_supply_info.bin,errno = %d (%s)",errno,strerror(errno));
 	}
 	else {
 		/* update the log_file_size on every  log write  */
@@ -55,10 +55,10 @@ void logger_file_write(void *generic_info,int length)
 		/* check whether file size has exceeded 3MB,if so rename file */
 		if (log_file_size > MAX_LOG_FILE_SIZE) {
 			fclose(logger_write_fp);
-			ALOGD("file rename called");
+			LOGD("file rename called");
 			status = rename_file(LOG_FILE,OLD_LOG_FILE);
 			if (status < 0)
-				ALOGE("renaming failed,errno = %d (%s)",errno,strerror(errno));
+				LOGE("renaming failed,errno = %d (%s)",errno,strerror(errno));
 			log_file_size = 0;
 			return;
 		}
@@ -74,7 +74,7 @@ void populate_header_info(logger_record_hdr_t *hdr,RECORD_TYPE_T type)
 
 	/* get the uptime */
 	if (sysinfo(&s_info) < 0) {
-		ALOGE("sysinfo call failure\n");
+		LOGE("sysinfo call failure\n");
 		hdr->uptime = -1;
 	}
 	else {

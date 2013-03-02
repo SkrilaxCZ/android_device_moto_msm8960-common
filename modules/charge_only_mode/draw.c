@@ -100,7 +100,7 @@ static int __load_asset(struct asset *a, int canvas_h, int y0)
 
 	b = malloc(a->w * canvas_h * 2);
 	if (!b) {
-		ALOGD("Out of memory\n");
+		LOGD("Out of memory\n");
 		return -1;
 	}
 
@@ -117,7 +117,7 @@ static int __load_asset(struct asset *a, int canvas_h, int y0)
 	if (	inflateInit2(&stream, 31) ||
 			inflate(&stream, 1) ||
 			inflateEnd(&stream)) {
-		ALOGD("Unexpected inflate error\n");
+		LOGD("Unexpected inflate error\n");
 		free(b);
 		return -1;
 	}

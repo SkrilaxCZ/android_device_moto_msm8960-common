@@ -208,7 +208,7 @@ int aplogd_rambuf_output(int index)
 	aplogd_io_array[index].input_buf = aplogd_io_array[index].input_buf_base;
         if (total_write_size >=aplogd_logfile_max)
         {
-		ALOGI("aplogd_logfile_max=%d, total_write_size=%d\n",aplogd_logfile_max, total_write_size);
+		LOGI("aplogd_logfile_max=%d, total_write_size=%d\n",aplogd_logfile_max, total_write_size);
 		aplogd_close_output();
 		aplogd_io_backupall(g_current_storage);
 		aplogd_output_setup(g_current_storage);

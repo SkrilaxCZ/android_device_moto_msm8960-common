@@ -66,21 +66,21 @@ int BHD_SYS_sys_param_int_get(const char *path, int missing_value)
         ssize_t r;
         int fd = open(path, O_RDONLY);
         if (fd < 0) {
-		ALOGE("Failed to open %s for reading, errno = %d (%s)",
+		LOGE("Failed to open %s for reading, errno = %d (%s)",
 			path, errno, strerror(errno));
                 return missing_value;
 	}
         r = read(fd, s, sizeof(s) - 1);
         close(fd);
         if (r < 0) {
-		ALOGE("Failed to read file %s, r = %lu, errno = %d (%s)",
+		LOGE("Failed to read file %s, r = %lu, errno = %d (%s)",
 			path, r, errno, strerror(errno));
                 return missing_value;
 	}
         s[(int) r] = '\0';
 	value = atoi(s);
 
-	ALOGV("Get %s = %d", path, value);
+	LOGV("Get %s = %d", path, value);
         return value;
 }
 
@@ -92,7 +92,7 @@ static bool sys_param_int_set(const char *path, int value)
 	char buffer[32];
 	int fd = open(path, O_WRONLY);
 	if (fd < 0)
-		ALOGE("Failed to open %s for writing %d, errno = %d (%s)",
+		LOGE("Failed to open %s for writing %d, errno = %d (%s)",
 			path, value, errno, strerror(errno));
 	else {
 		snprintf(buffer, sizeof(buffer) - 1, "%d", value);
@@ -100,11 +100,11 @@ static bool sys_param_int_set(const char *path, int value)
 
 		r = write(fd, buffer, strlen(buffer));
 		if (r != (ssize_t) strlen(buffer))
-			ALOGE("Failed to write %s to file %s, r = %lu, errno = %d (%s)",
+			LOGE("Failed to write %s to file %s, r = %lu, errno = %d (%s)",
 				buffer, path, r, errno, strerror(errno));
 		else {
 			is_success = true;
-			ALOGV("Set %s = %s", path, buffer);
+			LOGV("Set %s = %s", path, buffer);
 		}
 		close(fd);
 	}
@@ -135,7 +135,7 @@ int BHD_SYS_sys_param_string_get(const char *path, char *s, int size)
         int fd = open(path, O_RDONLY);
         s[0] = 0;
         if (fd < 0) {
-		ALOGE("Failed to open %s for reading, errno = %d (%s)",
+		LOGE("Failed to open %s for reading, errno = %d (%s)",
 			path, errno, strerror(errno));
                 return -1;
 	}
@@ -143,9 +143,9 @@ int BHD_SYS_sys_param_string_get(const char *path, char *s, int size)
         close(fd);
         if (r >= 0) {
                 s[r] = '\0';
-		ALOGV("Get %s = %s", path, s);
+		LOGV("Get %s = %s", path, s);
 	} else {
-		ALOGE("Failed to read file %s, errno = %d (%s)",
+		LOGE("Failed to read file %s, errno = %d (%s)",
 			path, errno, strerror(errno));
 	}
 
@@ -226,7 +226,7 @@ static bool sys_is_battery_nvm_write_needed(bhd_state_t *old_state, bhd_state_t 
 
 	if (cur_state->bms.chargecycles > old_state->bms.chargecycles) {
 		is_write_needed = true;
-		ALOGD("Write needed - Charge cycle increase, current = %d, old = %d",
+		LOGD("Write needed - Charge cycle increase, current = %d, old = %d",
 			cur_state->bms.chargecycles, old_state->bms.chargecycles);
 	}
 
@@ -234,13 +234,13 @@ static bool sys_is_battery_nvm_write_needed(bhd_state_t *old_state, bhd_state_t 
 	   Need to do this to account for multiple smaller increases */
 	if (cur_state->bms.charge_increase >= (old_state->last_chg_inc_write + 50)) {
 		is_write_needed = true;
-		ALOGD("Write needed - Charge %% increase, current = %d, old = %d",
+		LOGD("Write needed - Charge %% increase, current = %d, old = %d",
 			cur_state->bms.charge_increase, old_state->last_chg_inc_write);
 	}
 
 	if (cur_state->aged_capacity != old_state->aged_capacity) {
 		is_write_needed = true;
-		ALOGD("Write needed - Aged capacity chage, current = %d, old = %d",
+		LOGD("Write needed - Aged capacity chage, current = %d, old = %d",
 			cur_state->aged_capacity, old_state->aged_capacity);
 	}
 
@@ -278,7 +278,7 @@ static void sys_battery_state_read(bhd_state_t *state)
 	if (is_charging == 1) {
 		if (!state->is_charging) {
 			chrg_lvl = sys_battery_charge_level_get();
-			ALOGD("Battery start charging @ %d%%!", chrg_lvl);
+			LOGD("Battery start charging @ %d%%!", chrg_lvl);
 			state->is_charging = true;
 		}
 	} else if (is_charging == 0) {
@@ -287,7 +287,7 @@ static void sys_battery_state_read(bhd_state_t *state)
 			bhd_eoc_params_t eoc_tmp;
 
 			chrg_lvl = sys_battery_charge_level_get();
-			ALOGD("Battery stop charging @ %d%%", chrg_lvl);
+			LOGD("Battery stop charging @ %d%%", chrg_lvl);
 			/* Read the end of charge parameters */
 			eoc_ok = sys_eoc_param_read(&eoc_tmp);
 			if ( (eoc_ok == true) &&
@@ -295,7 +295,7 @@ static void sys_battery_state_read(bhd_state_t *state)
 				(eoc_tmp.boc_percent <= 5) &&
 				(sys_is_battery_full() == 1) &&
 				(eoc_tmp.eoc_percent == 100) ) {
-				ALOGD("Criteria met to calculate new aged capacity!");
+				LOGD("Criteria met to calculate new aged capacity!");
 				memcpy(&state->eoc, &eoc_tmp, sizeof(eoc_tmp));
 
 				percent_delta = 100 - (100 - state->eoc.eoc_percent) -
@@ -316,13 +316,13 @@ static void sys_battery_state_read(bhd_state_t *state)
 				state->aged_capacity = capacity_percent_int;
 				state->eoc.aged_timestamp = time(NULL);
 
-				ALOGD("Start %% = %d, start cc = %d, end %% = %d, end cc = %d, offset = %d",
+				LOGD("Start %% = %d, start cc = %d, end %% = %d, end cc = %d, offset = %d",
 					state->eoc.boc_percent, state->eoc.boc_cc_uah,
 					state->eoc.eoc_percent, state->eoc.eoc_cc_uah,
 					state->eoc.bms_offset);
-				ALOGD("Percent delta = %d, cc delta = %f, capacity mah = %f",
+				LOGD("Percent delta = %d, cc delta = %f, capacity mah = %f",
 					percent_delta, cc_delta, capacity_mah);
-				ALOGD("New aged capacity = %d%%, calculated @ %s",
+				LOGD("New aged capacity = %d%%, calculated @ %s",
 					state->aged_capacity, ctime(&state->eoc.aged_timestamp));
 				sys_bms_aged_capacity_write(state, 1, 0);
 				sys_bms_aged_timestamp_write(state, 1, 0);
@@ -347,7 +347,7 @@ bool BHD_SYS_bms_state_write(bhd_state_t *state)
 	{
 		value = *((int*)(bhd_state + bms_param_table[i].offset));
 		if (value == BHD_INVALID_VALUE)
-			ALOGE("Skipping %s", bms_param_table[i].path);
+			LOGE("Skipping %s", bms_param_table[i].path);
 		else {
 			is_success = sys_param_int_set_retry(bms_param_table[i].path,
 							value, 5, 250000);
@@ -397,30 +397,30 @@ bool BHD_SYS_battery_eeprom_read(bhd_state_t *state)
 	for (retries = 0; retries < max_retries; retries++) {
 
 		if (BHD_SYS_sys_param_int_get(SYS_EEPROM_PATH_IS_VALID, BHD_INVALID_VALUE) != 1)
-			ALOGE("Battery not valid");
+			LOGE("Battery not valid");
 		else if ( (cap = BHD_SYS_sys_param_int_get(SYS_EEPROM_PATH_CAPACITY, BHD_INVALID_VALUE))
 			== BHD_INVALID_VALUE)
-			ALOGE("Battery capacity not valid");
+			LOGE("Battery capacity not valid");
 		else if (BHD_SYS_sys_param_string_get(SYS_EEPROM_PATH_UID, state->eeprom.uid_str,
 						sizeof(state->eeprom.uid_str)) !=
 			(sizeof(state->eeprom.uid_str) - 1))
-			ALOGE("Battery UID not valid");
+			LOGE("Battery UID not valid");
 		else {
 			is_success = true;
 			state->eeprom.capacity = cap;
-			ALOGD("EEPROM - Battery ID = %s", state->eeprom.uid_str);
+			LOGD("EEPROM - Battery ID = %s", state->eeprom.uid_str);
 			break;
 		}
 
 		if ((retries + 1) < max_retries)
 			usleep(750000);
 		else
-			ALOGE("Failed to validate battery after %d attempts",
+			LOGE("Failed to validate battery after %d attempts",
 				retries + 1);
 	}
 #ifdef BHD_ALLOW_INVALID_BATTERY
 	if (!is_success) {
-		ALOGD("Allowing invalid battery");
+		LOGD("Allowing invalid battery");
 		strlcpy(state->eeprom.uid_str, "0123456789abcdef", sizeof(state->eeprom.uid_str));
 		state->eeprom.capacity = 1750;
 		is_success = true;

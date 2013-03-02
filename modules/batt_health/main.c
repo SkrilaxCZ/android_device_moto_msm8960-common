@@ -28,26 +28,26 @@ static int main_batt_uevent_init(void)
 
     s = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_KOBJECT_UEVENT);
     if(s < 0) {
-	    ALOGE("Failed to open uevent socket, errno = %d (%s)",
+	    LOGE("Failed to open uevent socket, errno = %d (%s)",
 		    errno, strerror(errno));
 	    return -1;
     }
 
     if (setsockopt(s, SOL_SOCKET, SO_RCVBUFFORCE, &sz, sizeof(sz)) < 0) {
-	    ALOGE("Failed to set socket option, errno = %d (%s)",
+	    LOGE("Failed to set socket option, errno = %d (%s)",
 		    errno, strerror(errno));
 	    close(s);
 	    return -1;
     }
 
     if(bind(s, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
-	    ALOGE("Failed to bind socket, errno = %d (%s)",
+	    LOGE("Failed to bind socket, errno = %d (%s)",
 		    errno, strerror(errno));
 	    close(s);
 	    return -1;
     }
 
-    ALOGD("Created socket %d for uevents", s);
+    LOGD("Created socket %d for uevents", s);
     return s;
 }
 
@@ -59,23 +59,23 @@ static void main_uevent_handler(int uevent_fd, bhd_state_t *state)
 
 	status = recv(uevent_fd, msg, sizeof(msg), MSG_DONTWAIT);
 	if (status == -1) {
-		ALOGE("uevent recv error, fd = %d, errno = %d (%s)",
+		LOGE("uevent recv error, fd = %d, errno = %d (%s)",
 			uevent_fd, errno, strerror(errno));
 	} else {
 		msg[(sizeof(msg) - 1)] = '\0';
-		ALOGV("Uevent = %s", msg);
+		LOGV("Uevent = %s", msg);
 		if (strcasestr(msg, "change@") &&
 			strcasestr(msg, "power_supply/battery")) {
-			ALOGD("Got a battery uevent,log details");
+			LOGD("Got a battery uevent,log details");
 			BHD_SYS_battery_state_change_handle(state);
 			BHD_LOGGER_log_power_supply_details();
 		} else if (strcasestr(msg, "change@") &&
 			strcasestr(msg, "power_supply/usb")) {
-			ALOGD("Got a USB uevent, log details");
+			LOGD("Got a USB uevent, log details");
 			BHD_LOGGER_log_power_supply_details();
 		} else if (strcasestr(msg, "change@") &&
 			strcasestr(msg, "power_supply/ac")) {
-			ALOGD("Got a AC uevent, log details");
+			LOGD("Got a AC uevent, log details");
 			BHD_LOGGER_log_power_supply_details();
 		}
 	}
@@ -106,9 +106,9 @@ static void main_factory_mode_check(bhd_state_t *state)
 	state->is_factory_mode = false;
 	r = property_get("ro.bootmode", value, unknown);
 	if ( (r <= 0) || (strncmp(value, unknown, sizeof(unknown)) == 0) )
-		ALOGE("Failed to read factory mode property");
+		LOGE("Failed to read factory mode property");
 	else if (strncmp(value, factory, sizeof(factory)) == 0) {
-		ALOGD("Phone is in factory mode!");
+		LOGD("Phone is in factory mode!");
 		state->is_factory_mode = true;
 	}
 }
@@ -126,12 +126,12 @@ static void main_event_listener(int uevent_fd, bhd_state_t *state)
 
 	while (1) {
 		working_events_fds = events_fds;
-		ALOGV("Waiting for event...");
+		LOGV("Waiting for event...");
 		select_val = select(uevent_fd + 1, &working_events_fds, NULL,
 				NULL, NULL);
 
 		if (select_val == -1)
-			ALOGE("select failure, errno = %d (%s)", errno,
+			LOGE("select failure, errno = %d (%s)", errno,
 				strerror(errno));
 		else if (select_val > 0)
 			if (FD_ISSET(uevent_fd, &working_events_fds))
@@ -148,11 +148,11 @@ static bool main_switch_user(void)
 	struct __user_cap_data_struct   cap;
 
 	if (prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0) < 0)
-		ALOGE("Failed to keep caps, errno = %d (%s)",
+		LOGE("Failed to keep caps, errno = %d (%s)",
 			errno, strerror(errno));
 	else {
 		if (setuid(AID_MOT_PWRIC) < 0)
-			ALOGE("Failed to set uid, errno = %d (%s)",
+			LOGE("Failed to set uid, errno = %d (%s)",
 				errno, strerror(errno));
 		else {
 			header.version = _LINUX_CAPABILITY_VERSION;
@@ -160,7 +160,7 @@ static bool main_switch_user(void)
 			cap.effective = cap.permitted = (1 << CAP_NET_ADMIN);
 			cap.inheritable = 0;
 			if (capset(&header, &cap) < 0)
-				ALOGE("Failed to set caps, errno = %d (%s)",
+				LOGE("Failed to set caps, errno = %d (%s)",
 					errno, strerror(errno));
 			else
 				is_success = true;
@@ -175,7 +175,7 @@ static bool main_switch_user(void)
 static void main_stop_app(const char *msg)
 {
 	while (1) {
-		ALOGE("Batt health app stopped due to: %s", msg);
+		LOGE("Batt health app stopped due to: %s", msg);
 		sleep(14400);
 	}
 }
@@ -192,12 +192,12 @@ int main(int argc, char* argv[])
 	/* If log_fp is not valid, log macros default to Android log
 	   utils, so ok to use macros here in fail case */
 	if (bhd_debug_log_fp == NULL)
-		ALOGE("Failed to open logfile");
+		LOGE("Failed to open logfile");
 	else
-		ALOGD("--------------------------------------------------");
+		LOGD("--------------------------------------------------");
 #endif
 
-	ALOGD("Battery Health Daemon start!");
+	LOGD("Battery Health Daemon start!");
 
 	if (main_switch_user() == false) {
 		main_stop_app("Failed to change user, stop daemon...");
@@ -219,7 +219,7 @@ int main(int argc, char* argv[])
 
 	/* Load persistent data from NVM & update BMS with values */
 	if (BHD_NVM_file_load(&state) == false)
-		ALOGE("No valid NVM files found");
+		LOGE("No valid NVM files found");
 	else {
 		if (BHD_SYS_bms_state_write(&state) == false) {
 			/* Since we failed to update kernel with loaded NVM data,
@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
 	/* TODO: Currently never will reach here. Need to add graceful
 	   shutdown */
 	close (uevent_fd);
-	ALOGD("Battery Health Daemon exit!");
+	LOGD("Battery Health Daemon exit!");
 
 	exit(EXIT_SUCCESS);
 }

@@ -56,7 +56,7 @@ static bool nvm_file_ver_0_read(int fd, bhd_state_t *state)
 
 	r = read(fd, &data, sizeof(data));
 	if (r != sizeof(data))
-		ALOGE("NVM Read - Failed to read data, r = %lu, errno = %d (%s)",
+		LOGE("NVM Read - Failed to read data, r = %lu, errno = %d (%s)",
 			r, errno, strerror(errno));
 	else {
 		state->bms.real_fcc_batt_temp = data.real_fcc_batt_temp;
@@ -92,12 +92,12 @@ static bool nvm_file_read(int fd, bhd_state_t *state)
 	/* Read the standard header first */
 	r = read(fd, &hdr, sizeof(hdr));
 	if (r != sizeof(hdr))
-		ALOGE("NVM Read - Failed to read file header, r = %lu, errno = %d (%s)",
+		LOGE("NVM Read - Failed to read file header, r = %lu, errno = %d (%s)",
 			r, errno, strerror(errno));
 	else if (strncmp(hdr.text, NVM_HDR_TEXT, sizeof(hdr.text)))
-		ALOGE("NVM Read - Invalid header");
+		LOGE("NVM Read - Invalid header");
 	else {
-		ALOGD("NVM Read - Read header, version = %d, file write count = %llu, "
+		LOGD("NVM Read - Read header, version = %d, file write count = %llu, "
 			"time = %s", hdr.version, hdr.file_write_count,
 			ctime(&hdr.timestamp));
 
@@ -108,7 +108,7 @@ static bool nvm_file_read(int fd, bhd_state_t *state)
 			break;
 
 		default:
-			ALOGE("NVM Read - Unknown version %d", hdr.version);
+			LOGE("NVM Read - Unknown version %d", hdr.version);
 			break;
 		}
 
@@ -152,25 +152,25 @@ static bool nvm_file_write(int fd, bhd_state_t *state)
 
 	r = write(fd, &hdr, sizeof(hdr));
 	if (r != sizeof(hdr))
-		ALOGE("NVM Write - Failed to file header, r = %lu, errno = %d (%s)",
+		LOGE("NVM Write - Failed to file header, r = %lu, errno = %d (%s)",
 			r, errno, strerror(errno));
 	else {
 		r = write(fd, &data, sizeof(data));
 		if (r != sizeof(data))
-			ALOGE("NVM Write - Failed to write file data, r = %lu, errno = %d (%s)",
+			LOGE("NVM Write - Failed to write file data, r = %lu, errno = %d (%s)",
 				r, errno, strerror(errno));
 		else {
 			is_success = true;
-			ALOGV("NVM Write - File write count = %llu, timestamp = %s",
+			LOGV("NVM Write - File write count = %llu, timestamp = %s",
 				hdr.file_write_count, ctime(&hdr.timestamp));
-			ALOGV("NVM Write - OCV = %d, rbatt = %d", data.ocv_uv, data.rbatt);
-			ALOGV("NVM Write - Charge %% increase = %d, charge cycles = %d",
+			LOGV("NVM Write - OCV = %d, rbatt = %d", data.ocv_uv, data.rbatt);
+			LOGV("NVM Write - Charge %% increase = %d, charge cycles = %d",
 				data.charge_increase, data.chargecycles);
-			ALOGV("NVM Write - Aged capacity = %d, Calculated @ %s",
+			LOGV("NVM Write - Aged capacity = %d, Calculated @ %s",
 				data.aged_capacity, ctime(&data.aged_timestamp));
-			ALOGV("NVM Write - BOC percent = %d, ocv = %d, cc = %d",
+			LOGV("NVM Write - BOC percent = %d, ocv = %d, cc = %d",
 				data.boc_percent, data.boc_ocv_uv, data.boc_cc_uah);
-			ALOGV("NVM Write - EOC percent = %d, ocv = %d, cc = %d",
+			LOGV("NVM Write - EOC percent = %d, ocv = %d, cc = %d",
 				data.eoc_percent, data.eoc_ocv_uv, data.eoc_cc_uah);
 		}
 	}
@@ -185,11 +185,11 @@ static void nvm_file_fsync(char *path)
 
 	fd = open(path, O_RDONLY);
 	if (fd <0)
-		ALOGE("NVM Write - Can not open %s for sync, errno = %d (%s)",
+		LOGE("NVM Write - Can not open %s for sync, errno = %d (%s)",
 			path, errno, strerror(errno));
 	else {
 		if (fsync(fd) != 0)
-			ALOGE("NVM Write - Failed to sync, errno = %d (%s)",
+			LOGE("NVM Write - Failed to sync, errno = %d (%s)",
 				errno, strerror(errno));
 		else
 			is_success = true;
@@ -227,19 +227,19 @@ static void nvm_file_bms_data_purify(bhd_state_t *state)
 
 	for (i = 0; i < num_elem; i++) {
 		val_ptr = (int*)( (char *) state + limit_table[i].offset);
-		ALOGV("NVM purify check - %s value = %d (range: low = %d, high = %d)",
+		LOGV("NVM purify check - %s value = %d (range: low = %d, high = %d)",
 			limit_table[i].name, *val_ptr,
 			limit_table[i].low_limit, limit_table[i].high_limit);
 		if (*val_ptr != BHD_INVALID_VALUE) {
 			if ( (limit_table[i].low_limit != BHD_INVALID_VALUE) &&
 				(*val_ptr < limit_table[i].low_limit)) {
-				ALOGE("NVM purify check - Parameter %s "
+				LOGE("NVM purify check - Parameter %s "
 					"too low = %d, reset to %d",
 					limit_table[i].name, *val_ptr, limit_table[i].def_val);
 				*val_ptr = limit_table[i].def_val;
 			} else if ( (limit_table[i].high_limit != BHD_INVALID_VALUE) &&
 				(*val_ptr > limit_table[i].high_limit)) {
-				ALOGE("NVM purify check - Parameter %s "
+				LOGE("NVM purify check - Parameter %s "
 					"too high = %d, reset to %d",
 					limit_table[i].name, *val_ptr, limit_table[i].def_val);
 				*val_ptr = limit_table[i].def_val;
@@ -274,34 +274,34 @@ bool BHD_NVM_file_load(bhd_state_t *state)
 		r = snprintf(path, sizeof(path), "%s%s_%d",
 			NVM_PATH_ROOT, state->eeprom.uid_str, i);
 		if (r < 0)
-			ALOGE("NVM Read - Failed to create nvm path name");
+			LOGE("NVM Read - Failed to create nvm path name");
 		else if (r > (int) (sizeof(path) - 1))
-			ALOGE("NVM Read - Failed to create nvm path name, too long");
+			LOGE("NVM Read - Failed to create nvm path name, too long");
 		else {
 			fd = open(path, O_RDONLY);
 			if (fd < 0)
-				ALOGE("NVM Read - Can not open %s, errno = %d (%s)",
+				LOGE("NVM Read - Can not open %s, errno = %d (%s)",
 					path, errno, strerror(errno));
 			else {
-				ALOGD("NVM Read - Opened NVM file %s", path);
+				LOGD("NVM Read - Opened NVM file %s", path);
 				r = read(fd, &hdr, sizeof(hdr));
 				if (r != sizeof(hdr))
-				     ALOGE("Failed to read header, r = %d, errno = %d (%s)",
+				     LOGE("Failed to read header, r = %d, errno = %d (%s)",
 				                r, errno, strerror(errno));
 				else if (hdr.version == NVM_FILE_HEADER_VERSION_0) {
 					close(fd);
 					status = remove(path);
 					if (status == 0 ) {
-						ALOGD("File deletion with version0 success %s",
+						LOGD("File deletion with version0 success %s",
 									path);
 					}
 					else
-						ALOGE("Unable to delete file %s\n",path);
+						LOGE("Unable to delete file %s\n",path);
 					continue;
 				}
 				else {
 						if(lseek(fd,0L,SEEK_SET) < 0)
-							ALOGE("lseek failed \n");
+							LOGE("lseek failed \n");
 						else
 							read_success = nvm_file_read(fd, &tmp_state[i]);
 				}
@@ -320,7 +320,7 @@ bool BHD_NVM_file_load(bhd_state_t *state)
 	/* If we found a valid file, set the current state to the temp state
 	   associated with the valid file */
 	if (index_to_use != -1) {
-		ALOGD("NVM Load - Found newest file, index to use = %d", index_to_use);
+		LOGD("NVM Load - Found newest file, index to use = %d", index_to_use);
 		is_success = true;
 		memcpy(state, &tmp_state[index_to_use], sizeof(*state));
 
@@ -344,25 +344,25 @@ bool BHD_NVM_file_save(bhd_state_t *state)
 	const char tmp_path[] = NVM_PATH_ROOT"tmp";
 
 	if (state->is_factory_mode) {
-		ALOGE("NVM Write - In factory mode, forbid saving to NVM");
+		LOGE("NVM Write - In factory mode, forbid saving to NVM");
 		return is_success;
 	}
 
 	r = snprintf(path, sizeof(path), "%s%s_%d",
 		NVM_PATH_ROOT, state->eeprom.uid_str, state->file_next_write);
 	if (r < 0)
-		ALOGE("NVM Write - Failed to create nvm path name");
+		LOGE("NVM Write - Failed to create nvm path name");
 	else if (r > (int) (sizeof(path) - 1))
-		ALOGE("NVM Write - Failed to create nvm path name, too long");
+		LOGE("NVM Write - Failed to create nvm path name, too long");
 	else {
 		/* Write data to temp file first */
 		fd = open(tmp_path, O_WRONLY | O_CREAT,
 			(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH));
 		if (fd <0)
-			ALOGE("NVM Write - Can not open %s, errno = %d (%s)",
+			LOGE("NVM Write - Can not open %s, errno = %d (%s)",
 				path, errno, strerror(errno));
 		else {
-			ALOGD("NVM Write - Opened NVM file %s", path);
+			LOGD("NVM Write - Opened NVM file %s", path);
 			is_success = nvm_file_write(fd, state);
 			close(fd);
 			if (is_success) {
@@ -371,7 +371,7 @@ bool BHD_NVM_file_save(bhd_state_t *state)
 				r = rename(tmp_path, path);
 				if (r) {
 					is_success = false;
-					ALOGE("Rename %s to %s failed, errno = %d (%s)",
+					LOGE("Rename %s to %s failed, errno = %d (%s)",
 						tmp_path, path, errno, strerror(errno));
 				} else {
 					nvm_file_fsync(path);
@@ -379,7 +379,7 @@ bool BHD_NVM_file_save(bhd_state_t *state)
 						NVM_NUM_FILES;
 					state->file_write_count++;
 					state->last_chg_inc_write = state->bms.charge_increase;
-					ALOGD("NVM Write - Successfully updated NVM file");
+					LOGD("NVM Write - Successfully updated NVM file");
 				}
 			}
 		}
