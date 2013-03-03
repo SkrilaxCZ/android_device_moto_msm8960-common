@@ -163,7 +163,7 @@ int format_ext4(char *fs_type, char *fs_real_blkdev, char *fs_mnt_point, long in
     info.len = off;
     if (fs_blksize != INVALID_BLOCK_SIZE)
         info.block_size = fs_blksize;
-    status = make_ext4fs_internal(fs_real_blkdev, NULL, fs_mnt_point, 0, 0, 0, 0, 0, 0, 0);
+    status = make_ext4fs_internal(fs_real_blkdev, NULL, fs_mnt_point, 0, 0, 0, 0, 0, 0);
     UDLOGV("make_ext4fs returned %d.\n", status);
     return 0;
 }
