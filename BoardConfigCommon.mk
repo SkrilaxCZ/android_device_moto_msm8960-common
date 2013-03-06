@@ -31,9 +31,12 @@ TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_ARCH_VARIANT_CPU := cortex-a9
 TARGET_CPU_SMP := true
 COMMON_GLOBAL_CFLAGS += -D__ARM_USE_PLD -D__ARM_CACHE_LINE_SIZE=64
+ARCH_ARM_HAVE_TLS_REGISTER := true
+ARCH_ARM_HAVE_NEON := true
+
 TARGET_GLOBAL_CFLAGS += -mfpu=neon -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp
-BOARD_USES_QCOM_HARDWARE := true
+COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE
 
 # Krait optimizations
 TARGET_USE_KRAIT_BIONIC_OPTIMIZATION := true
@@ -67,10 +70,14 @@ TARGET_USES_MOTOROLA_LOG := true
 # QCOM hardware
 BOARD_USES_QCOM_HARDWARE := true
 
+# GPS
+BOARD_USES_QCOM_GPS := true
+
 # Graphics
 USE_OPENGL_RENDERER := true
 TARGET_USES_C2D_COMPOSITION := true
 TARGET_USES_ION := true
+TARGET_QCOM_HDMI_OUT := true
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
@@ -78,10 +85,6 @@ TARGET_CUSTOM_BLUEDROID := ../../../$(LOCAL_PATH)/modules/bluetooth/bluetooth.c
 
 # NFC
 BOARD_HAVE_NFC := true
-
-# QCOM hardware
-BOARD_USES_QCOM_GPS := true
-
 # Audio
 BOARD_USES_ALSA_AUDIO := true
 
