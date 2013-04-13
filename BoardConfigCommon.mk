@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOCAL_PATH := device/motorola/msm8960-common
+LOCAL_PATH := device/moto/msm8960-common
 
 BOARD_VENDOR := motorola
 
@@ -61,7 +61,7 @@ ENABLE_WEBGL := true
 TARGET_FORCE_CPU_UPLOAD := true
 
 # Global flags
-COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE -DMOTOROLA_UIDS -DCAMERA_POWERMODE
+COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE -DMOTOROLA_UIDS -DCAMERA_ICS_BLOB -DCAMERA_POWERMODE
 
 TARGET_USES_MOTOROLA_LOG := true
 
@@ -92,8 +92,8 @@ BOARD_USES_SEPERATED_AUDIO_INPUT := true
 TARGET_QCOM_AUDIO_VARIANT:=caf
 
 # Camera
-#BOARD_CAMERA_USE_MM_HEAP := true
-#BOARD_NEEDS_MEMORYHEAPPMEM := true
+BOARD_CAMERA_USE_MM_HEAP := true
+BOARD_NEEDS_MEMORYHEAPPMEM := true
 
 #lights
 TARGET_PROVIDES_LIBLIGHT := true
